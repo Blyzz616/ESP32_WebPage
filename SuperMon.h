@@ -1,15 +1,15 @@
 /*
 
 
-  OK, ya ready for some fun? HTML + CSS styling + javascript all in and undebuggable environment
+  OK, ya ready for some fun? HTML + CSS styling + javascript all in an undebuggable environment
 
   one trick I've learned to how to debug HTML and CSS code.
 
-  get all your HTML code (from html to /html) and past it into this test site
+  get all your HTML code (from html to /html) and pass it into this test site
   muck with the HTML and CSS code until it's what you want
   https://www.w3schools.com/html/tryit.asp?filename=tryhtml_intro
 
-  No clue how to debug javascrip other that write, compile, upload, refresh, guess, repeat
+  No clue how to debug javascript other that write, compile, upload, refresh, guess, repeat
 
   I'm using class designators to set styles and id's for data updating
   for example:
@@ -17,7 +17,7 @@
   <td><div class="tabledata" id = "switch"></div></td>
 
   the XML code will update the data where id = "switch"
-  java script then uses getElementById
+  javascript then uses getElementById
   document.getElementById("switch").innerHTML="Switch is OFF";
 
 
@@ -26,7 +26,7 @@
   <td><div class="switch"></div></td>
 
   the XML code will update the data where class = "switch"
-  java script then uses getElementsByClassName
+  javascript then uses getElementsByClassName
   document.getElementsByClassName("switch")[0].style.color=text_color;
 
 
