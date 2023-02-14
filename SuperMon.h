@@ -312,9 +312,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <br>
     <br>
     <div class="bodytext">Fan Speed Control (RPM: <span id="fanrpm"></span>)</div>
-    <br>
+    <!--<br>
     <input type="range" class="fanrpmslider" min="0" max="255" value = "0" width = "0%" oninput="UpdateSlider(this.value)"/>
-    <br>
+    <br>-->
     <br>
   </main>
 
@@ -461,22 +461,22 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       document.getElementById("b1").style.backgroundColor=color;
       //document.getElementById("b1").style.borderRadius="5px";
       
-      xmldoc = xmlResponse.getElementsByTagName("V1");
-      message = xmldoc[0].firstChild.nodeValue;
-      document.getElementById("v1").innerHTML=message;
-      document.getElementById("v1").style.width=(width+"%");
-      document.getElementById("v1").style.backgroundColor=color;
+      //xmldoc = xmlResponse.getElementsByTagName("V1");
+      //message = xmldoc[0].firstChild.nodeValue;
+      //document.getElementById("v1").innerHTML=message;
+      //document.getElementById("v1").style.width=(width+"%");
+      //document.getElementById("v1").style.backgroundColor=color;
       //document.getElementById("v1").style.borderRadius="5px";
   
-      xmldoc = xmlResponse.getElementsByTagName("LED");
-      message = xmldoc[0].firstChild.nodeValue;
+      //xmldoc = xmlResponse.getElementsByTagName("LED");
+      //message = xmldoc[0].firstChild.nodeValue;
   
-      if (message == 0){
-        document.getElementById("btn0").innerHTML="Turn ON";
-      }
-      else{
-        document.getElementById("btn0").innerHTML="Turn OFF";
-      }
+      //if (message == 0){
+        document.getElementById("btn0").innerHTML="Open/Close";
+      //}
+      //else{
+        //document.getElementById("btn0").innerHTML="Turn OFF";
+      //}
 
       //Temp
       xmldoc = xmlResponse.getElementsByTagName("T0");
