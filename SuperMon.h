@@ -172,7 +172,35 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       font-size: 28px;
       text-align: left;
     }
-  
+
+    /////WORK ON TH IS BIT BELOW
+    /////WORK ON TH IS BIT BELOW
+    /////WORK ON TH IS BIT BELOW
+    /////WORK ON TH IS BIT BELOW
+    /////WORK ON TH IS BIT BELOW
+    /////WORK ON TH IS BIT BELOW
+    .blink-red{
+    animation: flashred 1s infinite;
+    }
+    @keyframes flashred{
+      0%    { background-color: #FFFFFF;}
+      50%   { background-color: #CC0000;}
+      100%  { background-color: #FFFFFF;}
+    }
+    .blink-org{
+    animation: flashred 3s infinite;
+    }
+    @keyframes flashred{
+      0%    { background-color: #FF8000;}
+      50%   { background-color: #CC0000;}
+      100%  { background-color: #FF8000;}
+    }
+    /////WORK ON TH IS BIT ABOVE
+    /////WORK ON TH IS BIT ABOVE
+    /////WORK ON TH IS BIT ABOVE
+    /////WORK ON TH IS BIT ABOVE
+    /////WORK ON TH IS BIT ABOVE
+
     .btn {
       background-color: #444444;
       border: none;
@@ -258,6 +286,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         <tr>
         <td><div class="bodytext">Digital switch</div></td>
         <td><div class="tabledata" id = "switch"></div></td>
+      </tr>
+        <tr>
+        <td><div class="bodytext">Temperature</div></td>
+        <td><div class="tabledata" id = "temp"></div></td>
+      </tr>
+      <tr>
+        <td><div class="bodytext">Garage</div></td>
+        <td><div class="tabledata" id = "garage"></div></td>
       </tr>
       </table>
     </div>
@@ -384,7 +420,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       // A0
       xmldoc = xmlResponse.getElementsByTagName("B0"); //bits for A0
       message = xmldoc[0].firstChild.nodeValue;
-      
+
       if (message > 2048){
       color = "#aa0000";
       }
@@ -439,7 +475,38 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       else{
         document.getElementById("btn0").innerHTML="Turn OFF";
       }
-         
+
+      //Temp
+      xmldoc = xmlResponse.getElementsByTagName("T0");
+      message = xmldoc[0].firstChild.nodeValue;
+      document.getElementById("temp").innerHTML=message;
+
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+
+      //Garage
+      xmldoc = xmlResponse.getElementsByTagName("G0");
+      message = xmldoc[0].firstChild.nodeValue;
+      if (message == "Closed"){
+        document.getElementById("garage").style.color="#00AA00";
+        document.getElementById("garage").innerHTML=message;
+      } else if (message == "Open") {
+        document.getElementById("garage").style.color="#EE0000";
+        document.getElementById("garage").innerHTML=message;
+      } else {
+        document.getElementById("garage").style.color="#F07800";
+        document.getElementById("garage").innerHTML=message;
+      }
+      /////WORK ON TH IS BIT ABOVE
+      /////WORK ON TH IS BIT ABOVE
+      /////WORK ON TH IS BIT ABOVE
+      /////WORK ON TH IS BIT ABOVE
+      /////WORK ON TH IS BIT ABOVE
+
       xmldoc = xmlResponse.getElementsByTagName("SWITCH");
       message = xmldoc[0].firstChild.nodeValue;
       document.getElementById("switch").style.backgroundColor="rgb(200,200,200)";
