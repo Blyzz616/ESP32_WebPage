@@ -173,12 +173,12 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       text-align: left;
     }
 
-    /////WORK ON TH IS BIT BELOW
-    /////WORK ON TH IS BIT BELOW
-    /////WORK ON TH IS BIT BELOW
-    /////WORK ON TH IS BIT BELOW
-    /////WORK ON TH IS BIT BELOW
-    /////WORK ON TH IS BIT BELOW
+    /////WORK ON THIS BIT BELOW
+    /////WORK ON THIS BIT BELOW
+    /////WORK ON THIS BIT BELOW
+    /////WORK ON THIS BIT BELOW
+    /////WORK ON THIS BIT BELOW
+    /////WORK ON THIS BIT BELOW
     .blink-red{
     animation: flashred 1s infinite;
     }
@@ -191,15 +191,15 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     animation: flashred 3s infinite;
     }
     @keyframes flashred{
-      0%    { background-color: #FF8000;}
-      50%   { background-color: #CC0000;}
-      100%  { background-color: #FF8000;}
+      0%    { background-color: #FFFFFF;}
+      50%   { background-color: #FF8000;}
+      100%  { background-color: #FFFFFF;}
     }
-    /////WORK ON TH IS BIT ABOVE
-    /////WORK ON TH IS BIT ABOVE
-    /////WORK ON TH IS BIT ABOVE
-    /////WORK ON TH IS BIT ABOVE
-    /////WORK ON TH IS BIT ABOVE
+    /////WORK ON THIS BIT ABOVE
+    /////WORK ON THIS BIT ABOVE
+    /////WORK ON THIS BIT ABOVE
+    /////WORK ON THIS BIT ABOVE
+    /////WORK ON THIS BIT ABOVE
 
     .btn {
       background-color: #444444;
@@ -273,6 +273,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         <th colspan="1"><div class="heading">Bits</div></th>
         <th colspan="1"><div class="heading">Volts</div></th>
       </tr>
+      <!--
       <tr>
         <td><div class="bodytext">Analog pin 34</div></td>
         <td><div class="tabledata" id = "b0"></div></td>
@@ -283,9 +284,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         <td><div class="tabledata" id = "b1"></div></td>
         <td><div class="tabledata" id = "v1"></div></td>
       </tr>
+      -->
         <tr>
-        <td><div class="bodytext">Digital switch</div></td>
-        <td><div class="tabledata" id = "switch"></div></td>
+        <td><div class="bodytext">Relay Switch</div></td>
+        <td><div class="tabledata" id = "relay"></div></td>
       </tr>
         <tr>
         <td><div class="bodytext">Temperature</div></td>
@@ -501,27 +503,43 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         document.getElementById("garage").style.color="#F07800";
         document.getElementById("garage").innerHTML=message;
       }
-      /////WORK ON TH IS BIT ABOVE
-      /////WORK ON TH IS BIT ABOVE
-      /////WORK ON TH IS BIT ABOVE
-      /////WORK ON TH IS BIT ABOVE
-      /////WORK ON TH IS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
 
-      xmldoc = xmlResponse.getElementsByTagName("SWITCH");
+      xmldoc = xmlResponse.getElementsByTagName("RELAY");
       message = xmldoc[0].firstChild.nodeValue;
-      document.getElementById("switch").style.backgroundColor="rgb(200,200,200)";
+      document.getElementById("relay").style.backgroundColor="rgb(200,200,200)";
       // update the text in the table
+      
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      /////WORK ON THIS BIT BELOW
+      
+      // close button for 200ms and then open it agqain
+      
       if (message == 0){
-        document.getElementById("switch").innerHTML="Switch is OFF";
+        document.getElementById("relay").innerHTML="Button Pressed";
         document.getElementById("btn1").innerHTML="Turn ON";
-        document.getElementById("switch").style.color="#0000AA"; 
+        document.getElementById("relay").style.color="#0000AA"; 
       }
       else {
-        document.getElementById("switch").innerHTML="Switch is ON";
+        document.getElementById("relay").innerHTML="Switch is ON";
         document.getElementById("btn1").innerHTML="Turn OFF";
-        document.getElementById("switch").style.color="#00AA00";
+        document.getElementById("relay").style.color="#00AA00";
       }
      }
+
+      /////WORK ON THIS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
+      /////WORK ON THIS BIT ABOVE
   
     // general processing code for the web page to ask for an XML steam
     // this is actually why you need to keep sending data to the page to 
