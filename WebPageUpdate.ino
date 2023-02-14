@@ -87,30 +87,30 @@
 #include <Wire.h>
 
 // replace this with your homes intranet connect parameters
-#define LOCAL_SSID "Thats what she SSID"
-#define LOCAL_PASS "mag1cdrag0n"
+#define LOCAL_SSID "********"
+#define LOCAL_PASS "********"
 
 // start your defines for pins for sensors, outputs etc.
-#define PIN_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
-#define PIN_FAN 27    // pin 27 and is a PWM signal to control a fan speed
-#define PIN_LED 2     //On board LED
-//#define PIN_A0 34     // some analog input sensor
-//#define PIN_A1 35     // some analog input sensor
-#define PIN_D4 4     // some analog input sensor
-#define PIN_HALL_C 12
-#define PIN_HALL_O 13
-#define PIN_C_POW 34
-#define PIN_O_POW 35
+#define PIN_OUTPUT 26     // connected to nothing but an example of a digital write from the web page
+#define PIN_FAN 27        // pin 27 and is a PWM signal to control a fan speed
+#define PIN_LED 2         //On board LED
+#define PIN_D4 4          // some analog input sensor
+#define PIN_HALL_C 12     // Hall Effect Sensor when Garage is closed
+#define PIN_HALL_O 14     // Hall Effect Sensor when Garage is open
+#define PIN_RELAY 13      // Relay Control
+#define PIN_C_POW 34      // Provide Power to the Hall Effect Sensor
+#define PIN_O_POW 35      // Provide Power to the Hall Effect Sensor
+#define PIN_R_POW 32      // Provide Power to the  Relay Switch
 
 OneWire ds(4);
 
 // variables to store measure data and sensor states
-int BitsA0 = 0, BitsA1 = 0;
-float VoltsA0 = 0, VoltsA1 = 0, TempD4=0;
-int FanSpeed = 0;
-bool LED0 = false, SomeOutput = false, BitsHC = false, BitsHO = false;
+int BitsA0 = 0, BitsA1 = 0;                                 // Legacy - Maybe remove?
+float VoltsA0 = 0, VoltsA1 = 0, TempD4=0;                   // Legacy - Maybe remove  "VoltsA0 = 0, VoltsA1 = 0"  ?
+int FanSpeed = 0;                                           // Legacy - Maybe remove?
+bool LED0 = false, RelaySwitch = false, BitsHC = false, BitsHO = false;      // Legacy - maybe remove LED0?
 uint32_t SensorUpdate = 0;
-int FanRPM = 0;
+int FanRPM = 0;                                             // Legacy - Maybe remove?
 
 // the XML array size needs to be bigger that your maximum expected size. 2048 is way too big for this example
 char XML[2048];
@@ -132,8 +132,8 @@ void setup() {
   // standard stuff here
   Serial.begin(115200);
 
-  pinMode(PIN_FAN, OUTPUT);
-  pinMode(PIN_LED, OUTPUT);
+  pinMode(PIN_FAN, OUTPUT);                                           // Legacy - Maybe remove?
+  pinMode(PIN_LED, OUTPUT);                                           // Legacy - Maybe remove?
   
   // Set Data IN pins for Hall Sensors
   pinMode(PIN_HALL_C, INPUT);  // Set the pin for the hall effect sensor as an input
@@ -195,8 +195,8 @@ void setup() {
   // as you can imagine you will need to code some javascript in your web page to send such strings
   // this process will be documented in the SuperMon.h web page code
   //server.on("/UPDATE_SLIDER", UpdateSlider);
-  //server.on("/BUTTON_0", ProcessButton_0);
-  //server.on("/BUTTON_1", ProcessButton_1);
+  server.on("/BUTTON_0", ProcessButton_0);            // I Think this is the LED Button and can be removed
+  server.on("/BUTTON_1", ProcessButton_1);            // I think this is the "Switch" button which I'm going to use for controlling the Relay
 
   // finally begin the server
   server.begin();
@@ -215,11 +215,11 @@ void loop() {
   if ((millis() - SensorUpdate) >= 500) {
     //Serial.println("Reading Sensors");
     SensorUpdate = millis();
-    BitsA0 = analogRead(PIN_A0);
-    BitsA1 = analogRead(PIN_A1);
+    BitsA0 = analogRead(PIN_A0);                  //remove?
+    BitsA1 = analogRead(PIN_A1);                  //remove?
     BitsHC = analogRead(PIN_HALL_C);
     BitsHO = analogRead(PIN_HALL_O);
-    Serial.print("BitsHC ");
+    Serial.print("BitsHC");
     Serial.println(BitsHC);
     
     // temperature
@@ -228,7 +228,7 @@ void loop() {
       byte type_s;
       byte data[9];
       byte addr[8];
-      float celsius, fahrenheit;
+      float celsius;
       
       if ( !ds.search(addr)) {
         ds.reset_search();
@@ -270,7 +270,7 @@ void loop() {
       TempD4 = (float)raw / 16.0;
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
-    VoltsA0 = BitsA0 * 3.3 / 4096;
+    VoltsA0 = BitsA0 * 3.3 / 4096; 
     VoltsA1 = BitsA1 * 3.3 / 4096;
 
     // hall sensors
@@ -294,11 +294,11 @@ void UpdateSlider() {
   // many I hate strings, but wifi lib uses them...
   String t_state = server.arg("VALUE");
 
-  // conver the string sent from the web page to an int
-  FanSpeed = t_state.toInt();
+  // convert the string sent from the web page to an int
+  FanSpeed = t_state.toInt();                  //remove?
                                                                                                                   //Serial.print("UpdateSlider"); Serial.println(FanSpeed);
   // now set the PWM duty cycle
-  ledcWrite(0, FanSpeed);
+  ledcWrite(0, FanSpeed);                  //remove?
 
 
   // YOU MUST SEND SOMETHING BACK TO THE WEB PAGE--BASICALLY TO KEEP IT LIVE
@@ -324,13 +324,13 @@ void UpdateSlider() {
 
 // now process button_0 press from the web site. Typical applications are the used on the web client can
 // turn on / off a light, a fan, disable something etc
-void ProcessButton_0() {
+//void ProcessButton_0() {
 
   //
 
 
-  LED0 = !LED0;
-  digitalWrite(PIN_LED, LED0);
+//  LED0 = !LED0;
+//  digitalWrite(PIN_LED, LED0);
                                                                                                             //Serial.print("Button 0 "); Serial.println(LED0);
   // regardless if you want to send stuff back to client or not
   // you must have the send line--as it keeps the page running
@@ -341,18 +341,18 @@ void ProcessButton_0() {
   // here i don't need to send and immediate status, any status
   // like the illumination status will be send in the main XML page update
   // code
-  server.send(200, "text/plain", ""); //Send web page
+//  server.send(200, "text/plain", ""); //Send web page
 
-}
+//}
 
 // same notion for processing button_1
 void ProcessButton_1() {
 
   // just a simple way to toggle a LED on/off. Much better ways to do this
                                                                                                                 //Serial.println("Button 1 press");
-  SomeOutput = !SomeOutput;
+  RelaySwitch = !RelaySwitch;
 
-  digitalWrite(PIN_OUTPUT, SomeOutput);
+  digitalWrite(PIN_RELAY, RelaySwitch);
                                                                                                                 //Serial.print("Button 1 "); Serial.println(LED0);
   // regardless if you want to send stuff back to client or not
   // you must have the send line--as it keeps the page running
@@ -392,23 +392,23 @@ void SendXML() {
   // send bits1
   sprintf(buf, "<B1>%d</B1>\n", BitsA1);
   strcat(XML, buf);
-  // send Volts1
-  sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
-  strcat(XML, buf);
+  // send Volts1                                                                                                                    //remove?
+  sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));                           //remove?
+  strcat(XML, buf);                                                                                                                 //remove?
 
-  // show led0 status
-  if (LED0) {
-    strcat(XML, "<LED>1</LED>\n");
+  // show led0 status                  //remove?
+  if (LED0) {                  //remove?
+    strcat(XML, "<LED>1</LED>\n");                  //remove?
+  }                  //remove?
+  else {                  //remove?
+    strcat(XML, "<LED>0</LED>\n");                  //remove?
+  }                  //remove?
+
+  if (RelaySwitch) {
+    strcat(XML, "<RELAY>1</RELAY>\n");
   }
   else {
-    strcat(XML, "<LED>0</LED>\n");
-  }
-
-  if (SomeOutput) {
-    strcat(XML, "<SWITCH>1</SWITCH>\n");
-  }
-  else {
-    strcat(XML, "<SWITCH>0</SWITCH>\n");
+    strcat(XML, "<RELAY>0</RELAY>\n");
   }
 
   // show temp
