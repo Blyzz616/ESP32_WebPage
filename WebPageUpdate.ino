@@ -8,7 +8,7 @@
     // Orange: (Data):    D14
 
 // Relay Switch:
-  // Pruple: (Control)  D13 (Between  Black and Brown)
+  // Pruple: (Control)  D130
 
 #include <WiFi.h>       // standard library
 #include <WebServer.h>  // standard library
@@ -17,23 +17,28 @@
 #include <Wire.h>
 #include <DallasTemperature.h>
 
+DeviceAddress freezer = { 0x28, 0xFF, 0xA3, 0x4E, 0x62, 0x16, 0x3, 0x8E };
+DeviceAddress garage = { 0x28, 0xFF, 0x33, 0xC4, 0x50, 0x16, 0x4, 0xE9 };
+DeviceAddress outside = { 0x28, 0xFF, 0xA7, 0x98, 0x61, 0x16, 0x4, 0xFE };
+
 // replace this with your homes intranet connect parameters
 #define LOCAL_SSID "Thats what she SSID"
 #define LOCAL_PASS "mag1cdrag0n"
 
 // start your defines for pins for sensors, outputs etc.
 #define PIN_OUTPUT 26     // connected to nothing but an example of a digital write from the web page
-#define PIN_D4 4          // some analog input sensor
+#define PIN_TEMP 4          // some analog input sensor
 #define PIN_HALL_C 12     // Hall Effect Sensor when Garage is closed
 #define PIN_HALL_O 14     // Hall Effect Sensor when Garage is open
 #define PIN_RELAY 13      // Relay Control
 #define PIN_R_POW 32      // Provide Power to the  Relay Switch
 
-OneWire ds(4);
+OneWire oneWire (PIN_TEMP);
+DallasTemperature sensors(&oneWire);
 
 // variables to store measure data and sensor states
 int BitsA0 = 0, BitsA1 = 0;                                 // Legacy - Maybe remove?
-float VoltsA0 = 0, VoltsA1 = 0, TempD4=0;                   // Legacy - Maybe remove  "VoltsA0 = 0, VoltsA1 = 0"  ?
+float VoltsA0 = 0, VoltsA1 = 0, tempFreezer = 0, tempGarage = 0, tempOutside = 0;                   // Legacy - Maybe remove  "VoltsA0 = 0, VoltsA1 = 0"  ?
 int FanSpeed = 0;                                           // Legacy - Maybe remove?
 bool LED0 = false, RelaySwitch = false, BitsHC = false, BitsHO = false;      // Legacy - maybe remove LED0?
 uint32_t SensorUpdate = 0;
@@ -109,51 +114,64 @@ void loop() {
     
 
     // temperature
-      byte i;
-      byte present = 0;
-      byte type_s;
-      byte data[9];
-      byte addr[8];
-      float celsius;
-      
-      if ( !ds.search(addr)) {
-        ds.reset_search();
-        delay(250);
-        return;
-      }
+  //Serial.print("Requesting temperatures...");
+  sensors.requestTemperatures(); // Send the command to get temperatures
+  //Serial.println("DONE");
+  
+  //Serial.print("Freezer: ");
+    tempFreezer = sensors.getTempC(freezer); 
+ 
+  //Serial.print("Garage: ");
+    tempGarage = sensors.getTempC(garage); 
+  
+  //Serial.print("Outside: ");
+    tempOutside = sensors.getTempC(outside); 
 
-      if (OneWire::crc8(addr, 7) != addr[7]) {
-          Serial.println("CRC is not valid!");
-          return;
-      }
-      type_s = 0;
+      // byte i;
+      // byte present = 0;
+      // byte type_s;
+      // byte data[9];
+      // byte addr[8];
+      // float celsius;
       
-      ds.reset();
-      ds.select(addr);
-      ds.write(0x44, 1);
+      // if ( !ds.search(addr)) {
+      //   ds.reset_search();
+      //   delay(250);
+      //   return;
+      // }
+
+      // if (OneWire::crc8(addr, 7) != addr[7]) {
+      //     Serial.println("CRC is not valid!");
+      //     return;
+      // }
+      // type_s = 0;
+      
+      // ds.reset();
+      // ds.select(addr);
+      // ds.write(0x44, 1);
         
-      present = ds.reset();
-      ds.select(addr);    
-      ds.write(0xBE);
+      // present = ds.reset();
+      // ds.select(addr);    
+      // ds.write(0xBE);
 
-      for ( i = 0; i < 9; i++) {
-        data[i] = ds.read();
-      }
+      // for ( i = 0; i < 9; i++) {
+      //   data[i] = ds.read();
+      // }
 
-      int16_t raw = (data[1] << 8) | data[0];
-      if (type_s) {
-        raw = raw << 3; 
-        if (data[7] == 0x10) {
-          raw = (raw & 0xFFF0) + 12 - data[6];
-        }
-      } else {
-        byte cfg = (data[4] & 0x60);
-        if (cfg == 0x00) raw = raw & ~7;  // 9 bit resolution, 93.75 ms
-        else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
-        else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
-      }
-      //celsius = (float)raw / 16.0;
-      TempD4 = (float)raw / 16.0;
+      // int16_t raw = (data[1] << 8) | data[0];
+      // if (type_s) {
+      //   raw = raw << 3; 
+      //   if (data[7] == 0x10) {
+      //     raw = (raw & 0xFFF0) + 12 - data[6];
+      //   }
+      // } else {
+      //   byte cfg = (data[4] & 0x60);
+      //   if (cfg == 0x00) raw = raw & ~7;  // 9 bit resolution, 93.75 ms
+      //   else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
+      //   else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
+      // }
+      // //celsius = (float)raw / 16.0;
+      // TempD4 = (float)raw / 16.0;
 
 
   }
@@ -171,16 +189,16 @@ void ProcessButton() {
   RelaySwitch = !RelaySwitch;
   digitalWrite(PIN_RELAY, RelaySwitch);
   
-  Serial.print("RelaySwitch: ");
-  Serial.println(RelaySwitch);
+ // Serial.print("RelaySwitch: ");
+ // Serial.println(RelaySwitch);
   
   delay(200);
   
   RelaySwitch = !RelaySwitch;
   digitalWrite(PIN_RELAY, RelaySwitch);
   
-  Serial.print("RelaySwitch: ");
-  Serial.println(RelaySwitch);
+  //Serial.print("RelaySwitch: ");
+  //Serial.println(RelaySwitch);
 
   server.send(200, "text/plain", ""); //Send web page
 
@@ -219,13 +237,17 @@ void SendXML() {
   }
 
   // show temp
-  sprintf(buf, "<T0>%d.%d</T0>\n", (int) (TempD4), abs((int) (TempD4 * 10)  - ((int) (TempD4) * 10)));
+  sprintf(buf, "<TF>%d.%d</TF>\n", (int) (tempFreezer), abs((int) (tempFreezer * 10)  - ((int) (tempFreezer) * 10)));
+  strcat(XML, buf);
+  sprintf(buf, "<TG>%d.%d</TG>\n", (int) (tempGarage), abs((int) (tempGarage * 10)  - ((int) (tempGarage) * 10)));
+  strcat(XML, buf);
+  sprintf(buf, "<TO>%d.%d</TO>\n", (int) (tempOutside), abs((int) (tempOutside * 10)  - ((int) (tempOutside) * 10)));
   strcat(XML, buf);
 
   // Hall sensors
   if (BitsHC){
     if (BitsHO) {
-      strcat(XML, "<G0>Moving</G0>\n");
+      strcat(XML, "<G0>Ajar</G0>\n");
     } 
     else {
       strcat(XML, "<G0>Open</G0>\n");
