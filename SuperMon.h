@@ -11,6 +11,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       position: relative;
       width:100%;
       border-spacing: 0px;
+      margin: 20px auto;
     }
     tr {
       border: 1px solid white;
@@ -38,6 +39,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       line-height: 20px;
       transition: all 200ms ease-in-out;
       background-color: #00AA00;
+      text-align:center;
     }
     .fanrpmslider {
       width: 30%;
@@ -113,9 +115,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       font-size: 28px;
       text-align: left;
     }
-
     .blink-red{
-    animation: flashred 1s infinite;
+      text-align:center;
+      animation: flashred 1s infinite;
     }
     @keyframes flashred{
       0%    { background-color: #C8C8C8;}
@@ -124,24 +126,25 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     }
     .blink-org{
     animation: flashorange 3s infinite;
+    text-align:center;
     }
     @keyframes flashorange{
       0%    { background-color: #C8C8C8;}
       50%   { background-color: #FF8000;}
       100%  { background-color: #C8C8C8;}
     }
-
     .btn {
-      background-color: #444444;
+      background-color: #4444CC;
       border: none;
       color: white;
       padding: 10px 20px;
       text-align: center;
       text-decoration: none;
       display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
+      font-size: 24px;
+      margin: 30px auto;
       cursor: pointer;
+      border-radius: 5px;
     }
     .foot {
       font-family: "Verdana", "Arial", sans-serif;
@@ -176,9 +179,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <header>
       <div class="navbar fixed-top">
           <div class="container">
-            <div class="navtitle">Sensor Monitor</div>
+            <div class="navtitle">Garage Status</div>
             <div class="navdata" id = "date">dd/mm/yyyy</div>
-            <div class="navheading">DATE</div><br>
+            <div class="navheading">DATE</div><br/>
             <div class="navdata" id = "time">00:00:00</div>
             <div class="navheading">TIME</div>
           </div>
@@ -186,46 +189,44 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     </header>
   
     <main class="container" style="margin-top:70px">
-      <div class="category">Sensor Readings</div>
       <div style="border-radius: 10px !important;">
-      <table style="width:50%">
-      <colgroup>
-        <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
-        <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
-      </colgroup>
-      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-      <tr>
-        <th colspan="1"><div class="heading">Pin</div></th>
-        <th colspan="1"><div class="heading">Bits</div></th>
-      </tr>
+        <table style="width:75%">
+        <colgroup>
+          <col span="1" style="background-color:rgb(230,230,230); width: 10%; color:#000000 ;">
+          <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
+        </colgroup>
+        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
         <tr>
-        <td><div class="bodytext">Relay Switch</div></td>
-        <td><div class="tabledata" id = "relay"></div></td>
-      </tr>
+          <th colspan="1"><div class="heading">Sensor</div></th>
+          <th colspan="1"><div class="heading">Status</div></th>
+        </tr>
+          <tr>
+          <td><div class="bodytext">Freezer temp</div></td>
+          <td><div class="tabledata" id = "tempF"></div></td>
+        </tr>
+        </tr>
+          <tr>
+          <td><div class="bodytext">Garage temp</div></td>
+          <td><div class="tabledata" id = "tempG"></div></td>
+        </tr>
+        </tr>
+          <tr>
+          <td><div class="bodytext">Outside temp</div></td>
+          <td><div class="tabledata" id = "tempO"></div></td>
+        </tr>
         <tr>
-        <td><div class="bodytext">Temperature</div></td>
-        <td><div class="tabledata" id = "temp"></div></td>
-      </tr>
-      <tr>
-        <td><div class="bodytext">Door Status</div></td>
-        <td><div id = "garage"></div></td>
-      </tr>
-      </table>
+          <td><div class="bodytext">Door Status</div></td>
+          <td><div id = "garage"></div></td>
+        </tr>
+        <tr>
+          <td colspan="2" align ="center">
+            <button type="button" class = "btn" id = "btn1" onclick="ButtonPress()">Activate Garage Door</button>
+          </td>
+        </tr
+        </table>
     </div>
-    <br>
-    <div class="category">Sensor Controls</div>
-    <br>
-    <div class="bodytext">Activate Garage Door</div>
-    <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()">Toggle</button>
-    </div>
-    <br>
-    <br>
-    <div class="bodytext">Fan Speed Control (RPM: <span id="fanrpm"></span>)</div>
-    <br>
   </main>
-
-  <footer div class="foot" id = "temp" >ESP32 Web Page Creation and Data Update Demo</div></footer>
   
   </body>
 
@@ -246,30 +247,31 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       return xmlHttp;
     }
 
-    function ButtonPress0() {
-      var xhttp = new XMLHttpRequest(); 
-      var message;
-      // if you want to handle an immediate reply (like status from the ESP
-      // handling of the button press use this code
-      // since this button status from the ESP is in the main XML code
-      // we don't need this
-      // remember that if you want immediate processing feedbac you must send it
-      // in the ESP handling function and here
-      /*
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          message = this.responseText;
-          // update some HTML data
-        }
-      }
-      */
-       
-      xhttp.open("PUT", "BUTTON_0", false);
-      xhttp.send();
-    }
+    // function ButtonPress0() {
+    //   var xhttp = new XMLHttpRequest(); 
+    //   var message;
+    //   // if you want to handle an immediate reply (like status from the ESP
+    //   // handling of the button press use this code
+    //   // since this button status from the ESP is in the main XML code
+    //   // we don't need this
+    //   // remember that if you want immediate processing feedbac you must send it
+    //   // in the ESP handling function and here
+    //   /*
+    //   xhttp.onreadystatechange = function() {
+    //     if (this.readyState == 4 && this.status == 200) {
+    //       message = this.responseText;
+    //       // update some HTML data
+    //     }
+    //   }
+    //   */
+    //  
+    //   xhttp.open("PUT", "BUTTON_0", false);
+    //   xhttp.send();
+    // }
 
-    function ButtonPress1() {
-      xhttp.open("PUT", "BUTTON_1", false);
+    function ButtonPress() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("PUT", "BUTTON", false);
       xhttp.send(); 
     }
     
@@ -284,13 +286,41 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       xmlResponse=xmlHttp.responseXML;
   
       // get host date and time
-      document.getElementById("time").innerHTML = dt.toLocaleTimeString();
-      document.getElementById("date").innerHTML = dt.toLocaleDateString();
+      document.getElementById("time").innerHTML = dt.toLocaleTimeString('en-US', {hour12: false});
+      //document.getElementById("time").innerHTML = dt.toLocaleTimeString();
+      document.getElementById("date").innerHTML = dt.toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'});
+      //document.getElementById("date").innerHTML = dt.toLocaleDateString();
   
       //Temp
-      xmldoc = xmlResponse.getElementsByTagName("T0");
+      xmldoc = xmlResponse.getElementsByTagName("TF"); // Freezer Temp
       message = xmldoc[0].firstChild.nodeValue;
-      document.getElementById("temp").innerHTML=message;
+      if (message == "-127.0")  {
+        document.getElementById("tempF").className="blink-red";
+        message = "Sensor Error"
+      }
+      else if (message >= -10){
+        document.getElementById("tempF").className="blink-red";
+      } 
+      else {
+        document.getElementById("tempF").className="tabledata";
+      }
+      document.getElementById("tempF").innerHTML=message;
+      
+      xmldoc = xmlResponse.getElementsByTagName("TG"); // Garage Temp
+      message = xmldoc[0].firstChild.nodeValue;
+      if (message == "-127.0") {
+        document.getElementById("tempG").className="blink-red";
+        message = "Sensor Error"
+      }
+      document.getElementById("tempG").innerHTML=message;
+      
+      xmldoc = xmlResponse.getElementsByTagName("TO"); // Outside Temp
+      message = xmldoc[0].firstChild.nodeValue;
+      if (message ==  "-127.0" ) {
+        document.getElementById("tempO").className="blink-red";
+        message = "Sensor Error"
+      }
+      document.getElementById("tempO").innerHTML=message;
 
       //Garage
       xmldoc = xmlResponse.getElementsByTagName("G0");
@@ -314,12 +344,12 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
       if (message == 0){
         document.getElementById("relay").innerHTML="---";
-        document.getElementById("btn1").innerHTML="Turn ON";
+        document.getElementById("btn1").innerHTML="Activate Garage Door";
         document.getElementById("relay").style.color="#0000AA"; 
       }
       else {
         document.getElementById("relay").innerHTML="Switch is ON";
-        document.getElementById("btn1").innerHTML="Turn OFF";
+        document.getElementById("btn1").innerHTML="Activate Garage Door";
         document.getElementById("relay").style.color="#00AA00";
       }
      }
