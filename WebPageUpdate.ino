@@ -15,10 +15,11 @@
 #include "SuperMon.h"   // .h file that stores your html page code
 #include <OneWire.h>
 #include <Wire.h>
+#include <DallasTemperature.h>
 
 // replace this with your homes intranet connect parameters
-#define LOCAL_SSID "*****"
-#define LOCAL_PASS "*****"
+#define LOCAL_SSID "Thats what she SSID"
+#define LOCAL_PASS "mag1cdrag0n"
 
 // start your defines for pins for sensors, outputs etc.
 #define PIN_OUTPUT 26     // connected to nothing but an example of a digital write from the web page
@@ -89,7 +90,7 @@ void setup() {
 
   server.on("/xml", SendXML);
 
-  server.on("/BUTTON_1", ProcessButton_1);            // I think this is the "Switch" button which I'm going to use for controlling the Relay
+  server.on("/BUTTON", ProcessButton);
 
   // finally begin the server
   server.begin();
@@ -164,16 +165,12 @@ delay(1000);
 }
 
 
-// same notion for processing button_1
-void ProcessButton_1() {
+void ProcessButton() {
 
-  Serial.flush();
   // just a simple way to toggle a LED on/off. Much better ways to do this
   RelaySwitch = !RelaySwitch;
   digitalWrite(PIN_RELAY, RelaySwitch);
   
-
-
   Serial.print("RelaySwitch: ");
   Serial.println(RelaySwitch);
   
