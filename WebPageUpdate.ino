@@ -1,84 +1,14 @@
-/*
-
-
-  this example will show
-  1. how to use and ESP 32 for reading pins
-  2. building a web page for a client (web browser, smartphone, smartTV) to connect to
-  3. sending data from the ESP to the client to update JUST changed data
-  4. sending data from the web page (like a slider or button press) to the ESP to tell the ESP to do something
-
-  If you are not familiar with HTML, CSS page styling, and javascript, be patient, these code platforms are
-  not intuitive and syntax is very inconsitent between platforms
-
-  I know of 4 ways to update a web page
-  1. send the whole page--very slow updates, causes ugly page redraws and is what you see in most examples
-  2. send XML data to the web page that will update just the changed data--fast updates but older method
-  3. JSON strings which are similar to XML but newer method
-  4. web sockets very very fast updates, but not sure all the library support is available for ESP's
-
-  I use XML here...
-
-  compile options
-  1. esp32 dev module
-  2. upload speed 921600
-  3. cpu speed 240 mhz
-  flash speed 80 mhz
-  flash mode qio
-  flash size 4mb
-  partition scheme default
-
-
-  NOTE if your ESP fails to program press the BOOT button during programm when the IDE is "looking for the ESP"
-
-  The MIT License (MIT)
-
-  code writen by Kris Kasprzak
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy of
-  this software and associated documentation files (the "Software"), to deal in
-  the Software without restriction, including without limitation the rights to
-  use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-  the Software, and to permit persons to whom the Software is furnished to do so,
-  subject to the following conditions:
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-  FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-  COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-  On a personal note, if you develop an application or product using this code 
-  and make millions of dollars, I'm happy for you!
-
-*/
-
 // Temp Sensor:
-  // Red:     3V3
-  // Black:   Gnd (Next to 3V3)
-  // Yellow:  D4 (2 empty after GNG above)
+  // Yellow:  D4
 
 // Hall Sensors:
   //Sensor1:
-    // Black  (Ground):   GND (Next to Vin)
-    // Brown: (Data):     D12 ( 1 empty after GND)
-    // White: (V+):       D34 ( 3 empty pins at end are Vin UP EN)
+    // Brown: (Data):     D12
   //Sensor2: 
-    // Yellow: (Ground):  ??
-    // Orange: (Data):    D14 (Next to Brown on other side of Black)
-    // Green: (V+):       D35 (Next to White)
+    // Orange: (Data):    D14
 
 // Relay Switch:
-  // Green: (3V3)       D32 (next to Green)
-  // Blue: (GND)        ??
   // Pruple: (Control)  D13 (Between  Black and Brown)
-
-//\\//
-//
-//OTHER SIDE OF RELAY must be _Common_ and _NO_ (Normally Open)
-//
-//\\//
 
 #include <WiFi.h>       // standard library
 #include <WebServer.h>  // standard library
@@ -87,19 +17,15 @@
 #include <Wire.h>
 
 // replace this with your homes intranet connect parameters
-#define LOCAL_SSID "********"
-#define LOCAL_PASS "********"
+#define LOCAL_SSID "Thats what she SSID"
+#define LOCAL_PASS "mag1cdrag0n"
 
 // start your defines for pins for sensors, outputs etc.
 #define PIN_OUTPUT 26     // connected to nothing but an example of a digital write from the web page
-#define PIN_FAN 27        // pin 27 and is a PWM signal to control a fan speed
-#define PIN_LED 2         //On board LED
 #define PIN_D4 4          // some analog input sensor
 #define PIN_HALL_C 12     // Hall Effect Sensor when Garage is closed
 #define PIN_HALL_O 14     // Hall Effect Sensor when Garage is open
 #define PIN_RELAY 13      // Relay Control
-#define PIN_C_POW 34      // Provide Power to the Hall Effect Sensor
-#define PIN_O_POW 35      // Provide Power to the Hall Effect Sensor
 #define PIN_R_POW 32      // Provide Power to the  Relay Switch
 
 OneWire ds(4);
@@ -132,34 +58,15 @@ void setup() {
   // standard stuff here
   Serial.begin(115200);
 
-  pinMode(PIN_FAN, OUTPUT);                                           // Legacy - Maybe remove?
-  pinMode(PIN_LED, OUTPUT);                                           // Legacy - Maybe remove?
+  //pinMode(PIN_FAN, OUTPUT);                                           // Legacy - Maybe remove?
+  //pinMode(PIN_LED, OUTPUT);                                           // Legacy - Maybe remove?
+
+  pinMode(PIN_RELAY, OUTPUT);
   
   // Set Data IN pins for Hall Sensors
   pinMode(PIN_HALL_C, INPUT);  // Set the pin for the hall effect sensor as an input
   pinMode(PIN_HALL_O, INPUT);  // Set the pin for the hall effect sensor as an input
   
-  // Power out for Hall Sensor Closed
-  pinMode(PIN_C_POW, OUTPUT);
-  digitalWrite(PIN_C_POW, HIGH);
-
-  // Power out for Hall Sensor Open
-  pinMode(PIN_O_POW, OUTPUT);
-  digitalWrite(PIN_O_POW, HIGH);
-
-  // turn off led
-  //LED0 = false;
-  //digitalWrite(PIN_LED, LED0);
-
-  // configure LED PWM functionalitites
-  //ledcSetup(0, 10000, 8);
-  //ledcAttachPin(PIN_FAN, 0);
-  //ledcWrite(0, FanSpeed);
-
-  // if your web page or XML are large, you may not get a call back from the web page
-  // and the ESP will think something has locked up and reboot the ESP
-  // not sure I like this feature, actually I kinda hate it
-  // disable watch dog timer 0
   disableCore0WDT();
 
   // maybe disable watch dog timer 1 if needed
@@ -167,8 +74,6 @@ void setup() {
 
   // just an update to progress
   Serial.println("starting server");
-
-  // if you have this #define USE_INTRANET,  you will connect to your home intranet, again makes debugging easier
 
   WiFi.begin(LOCAL_SSID, LOCAL_PASS);
   while (WiFi.status() != WL_CONNECTED) {
@@ -178,24 +83,12 @@ void setup() {
   Serial.print("IP address: "); Serial.println(WiFi.localIP());
   Actual_IP = WiFi.localIP();
 
-  printWifiStatus();
+  //printWifiStatus();
 
-
-  // these calls will handle data coming back from your web page
-  // this one is a page request, upon ESP getting / string the web page will be sent
   server.on("/", SendWebsite);
 
-  // upon esp getting /XML string, ESP will build and send the XML, this is how we refresh
-  // just parts of the web page
   server.on("/xml", SendXML);
 
-  // upon ESP getting /UPDATE_SLIDER string, ESP will execute the UpdateSlider function
-  // same notion for the following .on calls
-  // add as many as you need to process incoming strings from your web page
-  // as you can imagine you will need to code some javascript in your web page to send such strings
-  // this process will be documented in the SuperMon.h web page code
-  //server.on("/UPDATE_SLIDER", UpdateSlider);
-  server.on("/BUTTON_0", ProcessButton_0);            // I Think this is the LED Button and can be removed
   server.on("/BUTTON_1", ProcessButton_1);            // I think this is the "Switch" button which I'm going to use for controlling the Relay
 
   // finally begin the server
@@ -205,23 +98,15 @@ void setup() {
 
 void loop() {
 
-  // you main loop that measures, processes, runs code, etc.
-  // note that handling the "on" strings from the web page are NOT in the loop
-  // that processing is in individual functions all managed by the wifi lib
-
-  // in my example here every 50 ms, i measure some analog sensor data (my finger dragging over the pins
-  // and process accordingly
-  // analog input can be from temperature sensors, light sensors, digital pin sensors, etc.
-  if ((millis() - SensorUpdate) >= 500) {
+  if ((millis() - SensorUpdate) >= 1000) {
     //Serial.println("Reading Sensors");
     SensorUpdate = millis();
-    BitsA0 = analogRead(PIN_A0);                  //remove?
-    BitsA1 = analogRead(PIN_A1);                  //remove?
-    BitsHC = analogRead(PIN_HALL_C);
-    BitsHO = analogRead(PIN_HALL_O);
-    Serial.print("BitsHC");
-    Serial.println(BitsHC);
+    //BitsA0 = analogRead(PIN_A0);                  //remove?
+    //BitsA1 = analogRead(PIN_A1);                  //remove?
+    BitsHC = digitalRead(PIN_HALL_C);
+    BitsHO = digitalRead(PIN_HALL_O);
     
+
     // temperature
       byte i;
       byte present = 0;
@@ -269,95 +154,37 @@ void loop() {
       //celsius = (float)raw / 16.0;
       TempD4 = (float)raw / 16.0;
 
-    // standard converion to go from 12 bit resolution reads to volts on an ESP
-    VoltsA0 = BitsA0 * 3.3 / 4096; 
-    VoltsA1 = BitsA1 * 3.3 / 4096;
-
-    // hall sensors
-    int sensorValueC = digitalRead(BitsHC);  // Read the value of the hall effect sensor
-    int sensorValueO = digitalRead(BitsHO);  // Read the value of the hall effect sensor
 
   }
 
-  // no matter what you must call this handleClient repeatidly--otherwise the web page
-  // will not get instructions to do something
   server.handleClient();
 
-}
-
-
-// function managed by an .on method to handle slider actions on the web page
-// this example will get the passed string called VALUE and conver to a pwm value
-// and control the fan speed
-void UpdateSlider() {
-
-  // many I hate strings, but wifi lib uses them...
-  String t_state = server.arg("VALUE");
-
-  // convert the string sent from the web page to an int
-  FanSpeed = t_state.toInt();                  //remove?
-                                                                                                                  //Serial.print("UpdateSlider"); Serial.println(FanSpeed);
-  // now set the PWM duty cycle
-  ledcWrite(0, FanSpeed);                  //remove?
-
-
-  // YOU MUST SEND SOMETHING BACK TO THE WEB PAGE--BASICALLY TO KEEP IT LIVE
-
-  // option 1: send no information back, but at least keep the page live
-  // just send nothing back
-  // server.send(200, "text/plain", ""); //Send web page
-
-  // option 2: send something back immediately, maybe a pass/fail indication, maybe a measured value
-  // here is how you send data back immediately and NOT through the general XML page update code
-  // my simple example guesses at fan speed--ideally measure it and send back real data
-  // i avoid strings at all caost, hence all the code to start with "" in the buffer and build a
-  // simple piece of data
-  //FanRPM = map(FanSpeed, 0, 255, 0, 2400);
-  //strcpy(buf, "");
-  //sprintf(buf, "%d", FanRPM);
-  //sprintf(buf, buf);
-
-  // now send it back
-  server.send(200, "text/plain", buf); //Send web page
+delay(1000);
 
 }
 
-// now process button_0 press from the web site. Typical applications are the used on the web client can
-// turn on / off a light, a fan, disable something etc
-//void ProcessButton_0() {
-
-  //
-
-
-//  LED0 = !LED0;
-//  digitalWrite(PIN_LED, LED0);
-                                                                                                            //Serial.print("Button 0 "); Serial.println(LED0);
-  // regardless if you want to send stuff back to client or not
-  // you must have the send line--as it keeps the page running
-  // if you don't want feedback from the MCU--or let the XML manage
-  // sending feeback
-
-  // option 1 -- keep page live but dont send any thing
-  // here i don't need to send and immediate status, any status
-  // like the illumination status will be send in the main XML page update
-  // code
-//  server.send(200, "text/plain", ""); //Send web page
-
-//}
 
 // same notion for processing button_1
 void ProcessButton_1() {
 
+  Serial.flush();
   // just a simple way to toggle a LED on/off. Much better ways to do this
-                                                                                                                //Serial.println("Button 1 press");
   RelaySwitch = !RelaySwitch;
-
   digitalWrite(PIN_RELAY, RelaySwitch);
-                                                                                                                //Serial.print("Button 1 "); Serial.println(LED0);
-  // regardless if you want to send stuff back to client or not
-  // you must have the send line--as it keeps the page running
-  // if you don't want feedback from the MCU--or send all data via XML use this method
-  // sending feeback
+  
+
+
+  Serial.print("RelaySwitch: ");
+  Serial.println(RelaySwitch);
+  
+  delay(200);
+  
+  RelaySwitch = !RelaySwitch;
+  digitalWrite(PIN_RELAY, RelaySwitch);
+  
+  Serial.print("RelaySwitch: ");
+  Serial.println(RelaySwitch);
+
   server.send(200, "text/plain", ""); //Send web page
 
 }
@@ -367,9 +194,6 @@ void ProcessButton_1() {
 // PAGE_MAIN is a large char defined in SuperMon.h
 void SendWebsite() {
 
-                                                                                                                  //Serial.println("sending web page");
-  // you may have to play with this value, big pages need more porcessing time, and hence
-  // a longer timeout that 200 ms
   server.send(200, "text/html", PAGE_MAIN);
 
 }
@@ -380,14 +204,7 @@ void SendXML() {
 
   // Serial.println("sending xml");
 
-  strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
-
-  // send bitsA0
-  sprintf(buf, "<B0>%d</B0>\n", BitsA0);
-  strcat(XML, buf);
-  // send Volts0
-  sprintf(buf, "<V0>%d.%d</V0>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
-  strcat(XML, buf);
+  strcpy(XML, "<?xml version = '1.0' encoding='UTF-8'?>\n<Data>\n");
 
   // send bits1
   sprintf(buf, "<B1>%d</B1>\n", BitsA1);
@@ -396,13 +213,6 @@ void SendXML() {
   sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));                           //remove?
   strcat(XML, buf);                                                                                                                 //remove?
 
-  // show led0 status                  //remove?
-  if (LED0) {                  //remove?
-    strcat(XML, "<LED>1</LED>\n");                  //remove?
-  }                  //remove?
-  else {                  //remove?
-    strcat(XML, "<LED>0</LED>\n");                  //remove?
-  }                  //remove?
 
   if (RelaySwitch) {
     strcat(XML, "<RELAY>1</RELAY>\n");
@@ -416,47 +226,48 @@ void SendXML() {
   strcat(XML, buf);
 
   // Hall sensors
-  if (BitsHC) {
-    strcat(XML, "<G0>Closed</G0>\n"); // This should be green
-  } else if (BitsHO) {
-    strcat(XML, "<G0>Open</G0>\n");  // This should be red
-  } else {
-    strcat(XML, "<G0>Moving</G0>\n"); // This should be Orange
+  if (BitsHC){
+    if (BitsHO) {
+      strcat(XML, "<G0>Moving</G0>\n");
+    } 
+    else {
+      strcat(XML, "<G0>Open</G0>\n");
+    } 
   }
-  
+  else {
+    strcat(XML, "<G0>Closed</G0>\n");
+  }
+
   strcat(XML, "</Data>\n");
   // wanna see what the XML code looks like?
   // actually print it to the serial monitor and use some text editor to get the size
   // then pad and adjust char XML[2048]; above
-  Serial.println(XML);
+  //Serial.println(XML);
 
-  // you may have to play with this value, big pages need more porcessing time, and hence
-  // a longer timeout that 200 ms
   server.send(200, "text/xml", XML);
-
 
 }
 
 // I think I got this code from the wifi example
-void printWifiStatus() {
+// void printWifiStatus() {
 
-  // print the SSID of the network you're attached to:
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
+//   // print the SSID of the network you're attached to:
+//   Serial.print("SSID: ");
+//   Serial.println(WiFi.SSID());
 
-  // print your WiFi shield's IP address:
-  ip = WiFi.localIP();
-  Serial.print("IP Address: ");
-  Serial.println(ip);
+//   // print your WiFi shield's IP address:
+//   ip = WiFi.localIP();
+//   Serial.print("IP Address: ");
+//   Serial.println(ip);
 
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
-  // print where to go in a browser:
-  Serial.print("Open http://");
-  Serial.println(ip);
-}
+//   // print the received signal strength:
+//   long rssi = WiFi.RSSI();
+//   Serial.print("signal strength (RSSI):");
+//   Serial.print(rssi);
+//   Serial.println(" dBm");
+//   // print where to go in a browser:
+//   Serial.print("Open http://");
+//   Serial.println(ip);
+// }
 
 // end of code
