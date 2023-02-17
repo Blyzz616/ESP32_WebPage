@@ -22,8 +22,8 @@ DeviceAddress garage = { 0x28, 0xFF, 0x33, 0xC4, 0x50, 0x16, 0x4, 0xE9 };
 DeviceAddress outside = { 0x28, 0xFF, 0xA7, 0x98, 0x61, 0x16, 0x4, 0xFE };
 
 // replace this with your homes intranet connect parameters
-#define LOCAL_SSID "Thats what she SSID"
-#define LOCAL_PASS "mag1cdrag0n"
+#define LOCAL_SSID "*************"
+#define LOCAL_PASS "*************"
 
 // start your defines for pins for sensors, outputs etc.
 #define PIN_OUTPUT 26     // connected to nothing but an example of a digital write from the web page
