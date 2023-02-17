@@ -17,8 +17,8 @@
 #include <Wire.h>
 
 // replace this with your homes intranet connect parameters
-#define LOCAL_SSID "Thats what she SSID"
-#define LOCAL_PASS "mag1cdrag0n"
+#define LOCAL_SSID "*****"
+#define LOCAL_PASS "*****"
 
 // start your defines for pins for sensors, outputs etc.
 #define PIN_OUTPUT 26     // connected to nothing but an example of a digital write from the web page
