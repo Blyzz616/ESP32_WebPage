@@ -1,11 +1,11 @@
-<b><h2><center>Sampe code for updating a web page and getting user actions sent back the the microcontroller</center></h1></b>
+<b><h2><center>The code that I'm using to display temperatures and the status of my  garage as well as a button to activeate the garage door</center></h1></b>
 
-This sample code will show you how to create an access point, serve a web page, updated just changed data, and get user interactions such as button presses and slider actions sent back to the microcontrller.
+Using this [awesome code](https://github.com/KrisKasprzak/ESP32_WebPage) from [KrisKasprzak](https://github.com/KrisKasprzak), I've creadted a static web page that displays the current temperatures of the freezer in my garage, the ambient temerature in my garage and the outside temerature. I've also set up 2 hall effect sensors to show me whether the  garage door is fully open, fully  closed or somewhere in between.
 
-You will need an ESP32 and some open source libraries.
+The best part is that I've added a optocoupler relay to activate the garage door. As I've got a personal VPN sut up, All I need to do to  connec to that with my phone, and I can close my garage door (or open it to give someone access), frmo anywhere in the world with ineternet access.
 
 <br>
 <br>
 
 
-![garage](https://user-images.githubusercontent.com/19424317/219882959-6158fad7-7f64-491e-ad0b-230a750863e0.jpg)
+![garage](https://user-images.githubusercontent.com/19424317/221385717-bb6a6d08-2603-41ee-95e0-7aa49f3024cb.png)
