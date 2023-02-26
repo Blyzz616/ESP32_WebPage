@@ -1,6 +1,14 @@
 // Temp Sensor:
   // Yellow:  D4
 
+//      SS49E Hall Sensor
+//      Small side ( with letters on) facing front
+//      Pins on bottom
+//      left  is VCC
+//      middle is GND
+//      right is Data ( analogue  out)
+// 
+
 // Hall Sensors:
   //Sensor1:
     // Brown: (Data):     D12
@@ -22,8 +30,8 @@ DeviceAddress garage = { 0x28, 0xFF, 0x33, 0xC4, 0x50, 0x16, 0x4, 0xE9 };
 DeviceAddress outside = { 0x28, 0xFF, 0xA7, 0x98, 0x61, 0x16, 0x4, 0xFE };
 
 // replace this with your homes intranet connect parameters
-#define LOCAL_SSID "*************"
-#define LOCAL_PASS "*************"
+#define LOCAL_SSID "Thats what she SSID"
+#define LOCAL_PASS "mag1cdrag0n"
 
 // start your defines for pins for sensors, outputs etc.
 #define PIN_OUTPUT 26     // connected to nothing but an example of a digital write from the web page
@@ -251,17 +259,19 @@ void SendXML() {
     } 
     else {
       strcat(XML, "<G0>Open</G0>\n");
+      Serial.println("Open");
     } 
   }
   else {
     strcat(XML, "<G0>Closed</G0>\n");
+    Serial.println("Closed");
   }
 
   strcat(XML, "</Data>\n");
   // wanna see what the XML code looks like?
   // actually print it to the serial monitor and use some text editor to get the size
   // then pad and adjust char XML[2048]; above
-  //Serial.println(XML);
+  Serial.println(XML);
 
   server.send(200, "text/xml", XML);
 
