@@ -4,7 +4,7 @@ Using this [awesome code](https://github.com/KrisKasprzak/ESP32_WebPage) from [K
 
 The best part is that I've added a optocoupler relay to activate the garage door. As I've got a personal VPN sut up, All I need to do to  connec to that with my phone, and I can close my garage door (or open it to give someone access), frmo anywhere in the world with ineternet access.
 <br>
-The garage door status will slowly flash orange when it is travelling (not open and not closed) and it will flash red if it is open. The freezer temerature indicator will also start flashing red when the temperature is above -10 C°/
+The garage door status will slowly flash orange when it is travelling (not open and not closed) and it will flash red if it is open. The freezer temerature indicator will also start flashing red when the temperature is above -10 C°.
 <br>
 
 <strong>To do:</strong><br>
