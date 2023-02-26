@@ -7,9 +7,13 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 <title>Garage Status</title>
 
   <style>
+    body{
+      background-color: #000000;
+    }
     table {
+      background-color: #000000;
       position: relative;
-      width:100%;
+      width:75%;
       border-spacing: 0px;
       margin: 20px auto;
     }
@@ -21,12 +25,18 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     th {
       height: 20px;
       padding: 3px 15px;
-      background-color: #343a40;
-      color: #FFFFFF !important;
+      background-color: #555566;
       }
     td {
       height: 20px;
-       padding: 3px 15px;
+      padding: 3px 15px;
+      border-radius: 5px;
+    }
+    .th-left {
+      border-radius: 5px 0px 0px 5px
+    }
+    .th-right  {
+      border-radius: 0px 5px 5px 0px
     }
     .tabledata {
       font-size: 24px;
@@ -35,17 +45,11 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       padding-top: 5px;
       height:   25px;
       border-radius: 5px;
-      color: #FFFFFF;
+      color: #CCCCCC;
       line-height: 20px;
       transition: all 200ms ease-in-out;
       background-color: #00AA00;
       text-align:center;
-    }
-    .fanrpmslider {
-      width: 30%;
-      height: 55px;
-      outline: none;
-      height: 25px;
     }
     .bodytext {
       font-family: "Verdana", "Arial", sans-serif;
@@ -54,15 +58,16 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       font-weight: light;
       border-radius: 5px;
       display:inline;
+      color:  #CCCCCC;
     }
     .navbar {
       width: 100%;
       height: 50px;
       margin: 0;
       padding: 10px 0px;
-      background-color: #FFF;
-      color: #000000;
-      border-bottom: 5px solid #293578;
+      background-color: #000000;
+      color: #CCCCCC;
+      border-bottom: 5px solid #222847;
     }
     .fixed-top {
       position: fixed;
@@ -72,13 +77,16 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       z-index: 1030;
     }
     .navtitle {
-      float: left;
+      position: fixed;
       height: 50px;
       font-family: "Verdana", "Arial", sans-serif;
       font-size: 50px;
       font-weight: bold;
       line-height: 50px;
       padding-left: 20px;
+      color: #5E6798;
+      text-indent: 12.5%;
+      width: -webkit-fill-available;
     }
    .navheading {
      position: fixed;
@@ -89,6 +97,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
      font-weight: bold;
      line-height: 20px;
      padding-right: 20px;
+      color: #5E6798;
    }
    .navdata {
       justify-content: flex-end;
@@ -100,6 +109,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       font-weight: bold;
       line-height: 20px;
       padding-right: 20px;
+      color: #5E6798;
    }
     .category {
       font-family: "Verdana", "Arial", sans-serif;
@@ -114,30 +124,33 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       font-weight: normal;
       font-size: 28px;
       text-align: left;
+      color: #CCCCCC;
     }
     .blink-red{
       text-align:center;
       animation: flashred 1s infinite;
+      border-radius: 5px;
     }
     @keyframes flashred{
-      0%    { background-color: #C8C8C8;}
+      0%    { background-color: #000000;}
       50%   { background-color: #FF0000;}
-      100%  { background-color: #C8C8C8;}
+      100%  { background-color: #000000;}
     }
     .blink-org{
-    animation: flashorange 3s infinite;
-    text-align:center;
+      animation: flashorange 3s infinite;
+      text-align:center;
+       border-radius: 5px;
     }
     @keyframes flashorange{
-      0%    { background-color: #C8C8C8;}
+      0%    { background-color: #000000;}
       50%   { background-color: #FF8000;}
-      100%  { background-color: #C8C8C8;}
+      100%  { background-color: #000000;}
     }
     .btn {
-      background-color: #4444CC;
+      background-color: #0C0C49;
       border: none;
       color: white;
-      padding: 10px 20px;
+      padding: 40px 20px;
       text-align: center;
       text-decoration: none;
       display: inline-block;
@@ -145,6 +158,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       margin: 30px auto;
       cursor: pointer;
       border-radius: 5px;
+    }
+    .btn:active {
+     background-color: #239015;
     }
     .foot {
       font-family: "Verdana", "Arial", sans-serif;
@@ -174,7 +190,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     
   </style>
 </head>
-  <body style="background-color: #efefef" onload="process()">
+  <body onload="process()">
   
     <header>
       <div class="navbar fixed-top">
@@ -190,40 +206,34 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
   
     <main class="container" style="margin-top:70px">
       <div style="border-radius: 10px !important;">
-        <table style="width:75%">
-        <colgroup>
-          <col span="1" style="background-color:rgb(230,230,230); width: 10%; color:#000000 ;">
-          <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
-        </colgroup>
-        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <tr>
-          <th colspan="1"><div class="heading">Sensor</div></th>
-          <th colspan="1"><div class="heading">Status</div></th>
-        </tr>
+        <table>
           <tr>
-          <td><div class="bodytext">Freezer temp</div></td>
-          <td><div class="tabledata" id = "tempF"></div></td>
-        </tr>
-        </tr>
+            <th colspan="1"><div class="heading"><center>Sensor</center></div></th>
+            <th colspan="1"><div class="heading"><center>Status</center></div></th>
+          </tr>
+            <tr>
+            <td><div class="bodytext"><center>Freezer temp</center></div></td>
+            <td><div class="tabledata" id = "tempF"></div></td>
+          </tr>
+          </tr>
+            <tr>
+            <td><div class="bodytext"><center>Garage temp</center></div></td>
+            <td><div class="tabledata" id = "tempG"></div></td>
+          </tr>
+          </tr>
+            <tr>
+            <td><div class="bodytext"><center>Outside temp</center</div></td>
+            <td><div class="tabledata" id = "tempO"></div></td>
+          </tr>
           <tr>
-          <td><div class="bodytext">Garage temp</div></td>
-          <td><div class="tabledata" id = "tempG"></div></td>
-        </tr>
-        </tr>
+            <td><div class="bodytext"><center>Door Status</center></div></td>
+            <td><div id = "garage"></div></td>
+          </tr>
           <tr>
-          <td><div class="bodytext">Outside temp</div></td>
-          <td><div class="tabledata" id = "tempO"></div></td>
-        </tr>
-        <tr>
-          <td><div class="bodytext">Door Status</div></td>
-          <td><div id = "garage"></div></td>
-        </tr>
-        <tr>
-          <td colspan="2" align ="center">
-            <button type="button" class = "btn" id = "btn1" onclick="ButtonPress()">Activate Garage Door</button>
-          </td>
-        </tr
+            <td colspan="2" align ="center">
+              <button type="button" class = "btn" id = "btn1" onclick="ButtonPress()">Activate Garage Door</button>
+            </td>
+          </tr
         </table>
     </div>
   </main>
