@@ -16,3 +16,11 @@ The garage door status will slowly flash orange when it is travelling (not open 
 
 
 ![garage](https://user-images.githubusercontent.com/19424317/221385717-bb6a6d08-2603-41ee-95e0-7aa49f3024cb.png)
+
+I've added some more  functionality to keep a historical record of the temperatures in the freezer/outside/garage.
+
+I've used Apache2 with PhP and a tool called RRDTOOL (round-robin-database).I'm using it to keep data  stored each minute for a period of 10 years for all 3 sensors. The .RRD fils is only 163kb in size. but you can use all that  data to draw some grpahs.
+
+As This iste is being hosted on a linux server, I still need to figure out how to press that button form it. I might try using na iframe, or maybe will need to work some  PHP/Javascript magic somehow...
+
+![image](https://user-images.githubusercontent.com/19424317/224534572-7c48334f-8764-4e0e-8ca4-4966a9ff5482.png)
